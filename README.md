@@ -22,18 +22,6 @@ The selected frequency is displayed on a multiplexed two-digit 7-segment display
 * Interrupt-driven peripheral control
 * Embedded C implementation using MSP430 registers and peripherals
 
-## Peripheral Configuration
-
-| Peripheral | Function                                         |
-| ---------- | ------------------------------------------------ |
-| Timer A0   | PWM generation                                   |
-| Timer B0   | Sine lookup table sampling and frequency control |
-| ADC12      | Potentiometer / amplitude measurement            |
-| Timer A1   | Push-button debouncing                           |
-| Timer A2   | 7-segment display multiplexing                   |
-| UART       | Transmission of amplitude values                 |
-| GPIO       | Button, PWM and display control                  |
-
 ## Interrupts
 
 The project uses several interrupt sources:
@@ -83,8 +71,6 @@ Contains the interface for the 7-segment display helper functions.
 
 ## Project Documentation
 The complete project report is available in the docs directory.
-
-📄 View the project report
 
 ## Academic Context
 
