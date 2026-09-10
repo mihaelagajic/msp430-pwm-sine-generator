@@ -70,7 +70,10 @@ Contains helper functions and lookup tables used for controlling the 7-segment d
 Contains the interface for the 7-segment display helper functions.
 
 ## Project Documentation
-The complete project report is available in the docs directory.
+
+The complete project report is available in the [`docs`](./docs) directory.
+
+📄 [View the project report](./docs/project_report.docx)
 
 ## Academic Context
 
