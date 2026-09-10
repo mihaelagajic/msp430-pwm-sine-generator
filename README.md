@@ -22,59 +22,6 @@ The selected frequency is displayed on a multiplexed two-digit 7-segment display
 * Interrupt-driven peripheral control
 * Embedded C implementation using MSP430 registers and peripherals
 
-## System Overview
-
-```text
-                 +------------------+
-                 |  Potentiometer   |
-                 +--------+---------+
-                          |
-                          v
-                    +-----------+
-                    |   ADC12   |
-                    +-----+-----+
-                          |
-                          v
-                  +---------------+
-                  |   Amplitude   |
-                  |    Control    |
-                  +-------+-------+
-                          |
-                          v
-+----------------+   +----------+   +------------------+
-| Sine Lookup    |-->|   PWM    |-->|  PWM Output     |
-| Table (64 pts) |   | Generator|   |    TA0.2        |
-+-------+--------+   +----------+   +------------------+
-        ^
-        |
-+-------+--------+
-|    Timer B0    |
-| Frequency Ctrl |
-+----------------+
-
-+----------------+
-|  Push Button   |
-+-------+--------+
-        |
-        v
-+----------------+
-| Timer A1       |
-| Debouncing     |
-+----------------+
-
-+----------------+       +----------------+
-| Timer A2       |------>|  7-Segment     |
-| Multiplexing   |       |   Display      |
-+----------------+       +----------------+
-
-+----------------+
-|     UART       |
-+-------+--------+
-        |
-        v
-  Amplitude Data
-```
-
 ## Peripheral Configuration
 
 | Peripheral | Function                                         |
@@ -86,78 +33,6 @@ The selected frequency is displayed on a multiplexed two-digit 7-segment display
 | Timer A2   | 7-segment display multiplexing                   |
 | UART       | Transmission of amplitude values                 |
 | GPIO       | Button, PWM and display control                  |
-
-## Implementation
-
-### PWM Generation
-
-Timer A0 is configured to generate a PWM signal on the **TA0.2** output.
-
-The PWM period is defined by:
-
-```c
-#define PWM_PERIOD (1024)
-```
-
-The duty cycle is updated periodically according to the values from the sine lookup table.
-
-The resulting PWM signal has an approximately **1.024 kHz carrier frequency**.
-
-### Sinusoidal Modulation
-
-A **64-point sine lookup table** is used to generate the sinusoidal modulation.
-
-The lookup table contains one complete sine-wave period. Timer B0 periodically triggers an interrupt that:
-
-1. Reads the next value from the lookup table.
-2. Applies the selected amplitude.
-3. Scales the result to the PWM period.
-4. Updates the PWM duty cycle.
-5. Advances the lookup-table index.
-
-The lookup-table index wraps around after the 64th sample.
-
-### Amplitude Control
-
-A potentiometer is connected to the **A0 analog input** of the ADC12 peripheral.
-
-The ADC result is used to control the amplitude of the generated sinusoidal waveform.
-
-To reduce unnecessary UART communication, a new amplitude value is transmitted only when the change from the previous value exceeds a defined threshold.
-
-### Frequency Control
-
-The sine-wave frequency can be changed using the **S1 push button**.
-
-Each valid button press increases the frequency:
-
-```text
-1 Hz → 2 Hz → 3 Hz → ... → 10 Hz → 1 Hz
-```
-
-The button is connected to a GPIO interrupt. A software debounce mechanism based on **Timer A1** prevents multiple frequency changes caused by mechanical button bouncing.
-
-Timer B0 is then reconfigured according to the selected frequency.
-
-### 7-Segment Display
-
-The currently selected sine-wave frequency is displayed using a **two-digit 7-segment display**.
-
-Timer A2 is used to periodically switch between the two digits, creating a multiplexed display.
-
-The display therefore shows the current frequency without requiring a separate timer for each digit.
-
-### UART Communication
-
-UART communication is configured at:
-
-```text
-Baud rate: 9600 bit/s
-```
-
-The ADC-derived amplitude value is transmitted through UART when a significant change is detected.
-
-The transmitted value is formatted as a decimal number followed by a new line.
 
 ## Interrupts
 
@@ -184,20 +59,7 @@ This interrupt-driven architecture allows the peripherals to operate concurrentl
 * Lookup tables
 * Interrupt-driven programming
 
-## Project Structure
-
-```text
-msp430-pwm-sine-generator/
-│
-├── README.md
-│
-└── src/
-    ├── main.c
-    ├── function.c
-    └── function.h
-```
-
-### Source Files
+## Source Files
 
 **`main.c`**
 
@@ -219,17 +81,10 @@ Contains helper functions and lookup tables used for controlling the 7-segment d
 
 Contains the interface for the 7-segment display helper functions.
 
-## Key Parameters
+## Project Documentation
+The complete project report is available in the docs directory.
 
-| Parameter              |       Value |
-| ---------------------- | ----------: |
-| PWM period             |        1024 |
-| PWM carrier frequency  | ≈ 1.024 kHz |
-| Sine lookup table size |  64 samples |
-| Sine frequency range   |     1–10 Hz |
-| UART baud rate         |  9600 bit/s |
-| Button debounce period |     ≈ 32 ms |
-| ADC resolution used    |       8-bit |
+📄 View the project report
 
 ## Academic Context
 
